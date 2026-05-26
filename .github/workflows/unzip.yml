@@ -1,0 +1,24 @@
+name: Unzip Folder Automatically
+on: [push]
+
+jobs:
+  unzip-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP File
+        run: |
+          # Agar aapki zip ka naam kuch aur hai, toh project.zip ki jagah wo naam likhe
+          unzip -o project.zip 
+          rm project.zip
+
+      - name: Commit and Push Extracted Files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Automated unzip from phone"
+          git push
+          

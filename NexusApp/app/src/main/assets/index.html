@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#060a14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Nexus</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#060a14;--bg2:#0b1120;--bg3:#111a2e;--bg4:#182238;--neon:#00b4ff;--neon2:#0066bb;--text:#e8f0ff;--text2:#7a94b8;--text3:#3d5270;--red:#ff4560;--green:#00e676;--online:#00e676;--amber:#ffb830}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'DM Sans',sans-serif;color:var(--text);display:flex;justify-content:center}
+#app{width:100%;max-width:440px;height:100%;position:relative;overflow:hidden;background:var(--bg)}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transition:opacity .22s,transform .22s;z-index:1}
+.screen.off{opacity:0;pointer-events:none;transform:translateX(-14px);z-index:0}
+.screen.slide{transform:translateY(0)}
+.screen.slide.off{transform:translateY(100%)}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .6s ease,transform .6s ease}
+#splash.hide{opacity:0;pointer-events:none;transform:scale(1.04)}
+.splash-logo{animation:splashPop .7s cubic-bezier(.34,1.56,.64,1) .2s both}
+@keyframes splashPop{from{opacity:0;transform:scale(.5) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.splash-name{font-family:'Sora',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-.05em;background:linear-gradient(135deg,#38cfff,#00b4ff,#0077ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 24px rgba(0,180,255,.6));animation:splashFade .6s ease .7s both;margin-top:.5rem}
+.splash-tag{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text3);font-weight:500;animation:splashFade .6s ease .95s both}
+.splash-bar-wrap{width:140px;height:3px;background:var(--bg3);border-radius:2px;margin-top:2.5rem;overflow:hidden;animation:splashFade .4s ease 1.1s both}
+.splash-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),#0077ee);border-radius:2px;animation:splashLoad 1.6s ease 1.2s forwards}
+@keyframes splashLoad{0%{width:0%}60%{width:70%}100%{width:100%}}
+@keyframes splashFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.splash-glow1{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,255,.12),transparent 70%);top:-80px;left:-80px;animation:splashFade .8s ease .1s both}
+.splash-glow2{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(0,100,200,.1),transparent 70%);bottom:-60px;right:-60px;animation:splashFade .8s ease .3s both}
+
+/* INFO PAGES */
+.info-page{background:var(--bg)}
+.info-hero{padding:1.5rem 1.25rem 1rem;background:var(--bg2);border-bottom:1px solid var(--bg3);display:flex;align-items:center;gap:1rem}
+.info-hero-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.info-hero-text h2{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
+.info-hero-text p{font-size:.8rem;color:var(--text3);line-height:1.5}
+.info-section{padding:1rem 1.25rem}
+.info-section h3{font-size:.72rem;color:var(--neon);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:.65rem;margin-top:.3rem}
+.info-card{background:var(--bg2);border-radius:13px;padding:1rem 1.1rem;margin-bottom:.75rem;border:1px solid var(--bg3);line-height:1.7;font-size:.88rem;color:var(--text2)}
+.info-card strong{color:var(--text);font-weight:600;display:block;margin-bottom:.3rem}
+.info-card p{margin-bottom:.5rem}
+.info-card p:last-child{margin-bottom:0}
+.info-tag{display:inline-block;background:rgba(0,180,255,.1);border:1px solid rgba(0,180,255,.2);color:var(--neon);font-size:.72rem;font-weight:600;padding:.18rem .55rem;border-radius:6px;margin:.15rem .1rem}
+.info-version{text-align:center;padding:1.5rem 1rem 2rem;color:var(--text3);font-size:.78rem;line-height:2}
+.topbar{height:58px;background:var(--bg);border-bottom:1px solid var(--bg3);display:flex;align-items:center;padding:0 1rem;gap:.6rem;flex-shrink:0}
+.ttl{font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#38cfff,#00b4ff,#0077ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 8px rgba(0,180,255,.35));flex:1}
+.ttl-sm{font-size:1rem!important}
+.ibt{width:36px;height:36px;border-radius:50%;background:var(--bg2);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:.15s;flex-shrink:0}
+.ibt:active{background:var(--bg3)}
+.backbtn{width:36px;height:36px;background:none;border:none;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:.15s;flex-shrink:0}
+.backbtn:active{background:var(--bg2)}
+.srch-bar{margin:.7rem 1rem;background:var(--bg2);border-radius:12px;display:flex;align-items:center;gap:.45rem;padding:.58rem .9rem;border:1px solid var(--bg3)}
+.srch-bar input{flex:1;background:none;border:none;color:var(--text);font-size:.88rem;outline:none;font-family:'DM Sans',sans-serif}
+.srch-bar input::placeholder{color:var(--text3)}
+.scroll-area{flex:1;overflow-y:auto}
+.scroll-area::-webkit-scrollbar{width:3px}
+.scroll-area::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* BOTTOM NAV */
+.bnav{height:60px;background:var(--bg);border-top:1px solid var(--bg3);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;padding:0 .5rem}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:.4rem .7rem;background:none;border:none;color:var(--text3);cursor:pointer;font-size:.6rem;font-weight:500;font-family:'DM Sans',sans-serif;border-radius:10px;transition:.15s;position:relative}
+.nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nb.on{color:var(--neon)}.nb.on svg{stroke:var(--neon)}
+.notif-dot{position:absolute;top:3px;right:6px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--bg);display:none}
+.notif-dot.show{display:block}
+
+/* AUTH */
+#s-auth{justify-content:center;padding:2rem 1.75rem;overflow-y:auto}
+.logo-wrap{text-align:center;margin-bottom:1.8rem}
+.logo-mark{display:block;margin:0 auto .85rem}
+.logo-name{font-family:'Sora',sans-serif;font-size:2.8rem;font-weight:800;letter-spacing:-.05em;background:linear-gradient(135deg,#38cfff,#00b4ff,#0077ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 16px rgba(0,180,255,.5));margin-bottom:.25rem}
+.logo-tag{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);font-weight:500}
+.atabs{display:flex;background:var(--bg2);border-radius:13px;padding:4px;margin-bottom:1.2rem;border:1px solid var(--bg3)}
+.atab{flex:1;padding:.54rem;text-align:center;border-radius:9px;font-size:.88rem;font-weight:500;cursor:pointer;color:var(--text2);transition:.2s;user-select:none}
+.atab.on{background:var(--bg4);color:var(--neon)}
+.field{margin-bottom:.8rem}
+.field label{display:block;font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em}
+.field input,.field select,.field textarea{width:100%;background:var(--bg2);border:1.5px solid var(--bg3);border-radius:11px;padding:.75rem 1rem;color:var(--text);font-size:.93rem;font-family:'DM Sans',sans-serif;outline:none;transition:.2s;resize:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--neon);box-shadow:0 0 0 3px rgba(0,180,255,.1)}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3)}
+.field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233d5270' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+.btn-main{width:100%;padding:.88rem;background:linear-gradient(135deg,var(--neon),var(--neon2));border:none;border-radius:11px;color:#fff;font-size:.95rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:.2rem;transition:.15s;box-shadow:0 4px 18px rgba(0,180,255,.28)}
+.btn-main:active{transform:scale(.98)}
+.auth-foot{text-align:center;color:var(--text3);font-size:.8rem;margin-top:.75rem}
+.auth-foot span{color:var(--neon);cursor:pointer;font-weight:500}
+
+/* DM LIST */
+.my-av-btn{width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid var(--neon);cursor:pointer;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--neon)}
+.my-av-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.sec-label{padding:.55rem 1rem .15rem;font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+.dmi{display:flex;align-items:center;gap:.75rem;padding:.78rem 1rem;cursor:pointer;border-bottom:1px solid rgba(17,26,46,.7);transition:.12s}
+.dmi:active{background:var(--bg2)}
+.avw{position:relative;flex-shrink:0}
+.av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.onldot{position:absolute;bottom:1px;right:1px;width:12px;height:12px;background:var(--online);border-radius:50%;border:2.5px solid var(--bg)}
+.dinfo{flex:1;min-width:0}
+.dname-row{font-size:.9rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:.18rem}
+.dtime{font-size:.7rem;color:var(--text3);font-weight:400}
+.dprev{font-size:.81rem;color:var(--text2);display:flex;align-items:center;gap:.35rem}
+.dprev span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ubadge{min-width:18px;height:18px;padding:0 5px;background:var(--neon);border-radius:9px;font-size:.66rem;font-weight:700;color:#060a14;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* CHAT */
+.chat-top{height:58px;background:var(--bg);border-bottom:1px solid var(--bg3);display:flex;align-items:center;padding:0 .75rem;gap:.5rem;flex-shrink:0}
+.cinfo{flex:1;display:flex;align-items:center;gap:.55rem;min-width:0;cursor:pointer}
+.cav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;position:relative;flex-shrink:0;overflow:hidden}
+.cav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.conl{position:absolute;bottom:0;right:0;width:9px;height:9px;background:var(--online);border-radius:50%;border:2px solid var(--bg)}
+.cname{font-size:.92rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cstat{font-size:.7rem}
+.msgs{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.38rem}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--bg4)}
+.dsep{text-align:center;font-size:.68rem;color:var(--text3);padding:.35rem 0}
+.mw{display:flex;align-items:flex-end;gap:.3rem;width:100%}
+.mw.me{flex-direction:row-reverse}
+.mav{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;overflow:hidden;align-self:flex-end}
+.mav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.msg-col{display:flex;flex-direction:column;align-items:flex-start;max-width:72%}
+.mw.me .msg-col{align-items:flex-end}
+.mb{padding:.58rem .82rem;border-radius:17px;font-size:.88rem;line-height:1.5;word-break:break-word;display:inline-block}
+.mb.th{background:var(--bg3);border-bottom-left-radius:4px;color:var(--text)}
+.mb.mn{background:linear-gradient(135deg,#00aaff,#0066cc);border-bottom-right-radius:4px;color:#fff;font-weight:500}
+.mt{font-size:.6rem;color:var(--text3);margin-top:.12rem;display:block}
+.mw.me .mt{text-align:right}
+.typing-dots{display:inline-flex;gap:4px;background:var(--bg3);padding:.48rem .7rem;border-radius:17px;border-bottom-left-radius:4px}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce 1.1s infinite}
+.typing-dots span:nth-child(2){animation-delay:.18s}
+.typing-dots span:nth-child(3){animation-delay:.36s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.cinput{padding:.55rem .7rem;background:var(--bg2);border-top:1px solid var(--bg3);display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+.cinput input{flex:1;background:var(--bg3);border:1.5px solid transparent;border-radius:22px;padding:.58rem .9rem;color:var(--text);font-size:.88rem;outline:none;font-family:'DM Sans',sans-serif;transition:.18s}
+.cinput input:focus{border-color:var(--neon)}
+.cinput input::placeholder{color:var(--text3)}
+.sndbtn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#00aaff,#0066cc);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 2px 10px rgba(0,180,255,.3)}
+.sndbtn:active{transform:scale(.9)}
+
+/* SEARCH */
+.search-empty{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
+.search-empty .se-icon{font-size:2.5rem;margin-bottom:.75rem}
+.search-empty p{font-size:.88rem;line-height:1.6}
+.user-result{display:flex;align-items:center;gap:.75rem;padding:.78rem 1rem;border-bottom:1px solid rgba(17,26,46,.7);cursor:pointer;transition:.12s}
+.user-result:active{background:var(--bg2)}
+.ur-info{flex:1;min-width:0}
+.ur-name{font-size:.92rem;font-weight:600}
+.ur-user{font-size:.76rem;color:var(--text3)}
+.follow-btn{padding:.36rem .85rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;transition:.15s;flex-shrink:0}
+.follow-btn.follow{background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff}
+.follow-btn.following{background:var(--bg3);color:var(--text2);border:1px solid var(--bg4)}
+
+/* USER PROFILE VIEW */
+.up-cover{height:130px;background:linear-gradient(135deg,#081830,#030810);position:relative;flex-shrink:0}
+.up-cover-grad{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,100,200,.2),rgba(0,30,80,.4))}
+.up-av-wrap{position:absolute;bottom:-40px;left:1rem;width:80px;height:80px;border-radius:50%;border:3px solid var(--bg);overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:2rem}
+.up-av-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.up-body{padding:3.2rem 1rem 1rem;border-bottom:1px solid var(--bg3)}
+.up-name{font-family:'Sora',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:.1rem}
+.up-username{font-size:.8rem;color:var(--text3);margin-bottom:.3rem}
+.up-bio{font-size:.84rem;color:var(--text2);margin-bottom:.75rem;line-height:1.5}
+.up-actions{display:flex;gap:.6rem;margin-bottom:1rem}
+.up-follow-btn{flex:1;padding:.6rem;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;transition:.15s;text-align:center}
+.up-follow-btn.follow{background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;box-shadow:0 3px 14px rgba(0,180,255,.25)}
+.up-follow-btn.following{background:var(--bg3);color:var(--text2);border:1px solid var(--bg4)}
+.up-msg-btn{flex:1;padding:.6rem;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;background:var(--bg3);border:1px solid var(--bg4);color:var(--text);transition:.15s;text-align:center}
+.up-msg-btn:active,.up-follow-btn:active{opacity:.85}
+.up-stats{display:flex;gap:2rem}
+.up-stat{text-align:center;cursor:pointer}
+.up-stat:active{opacity:.7}
+.up-stat-n{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700}
+.up-stat-l{font-size:.7rem;color:var(--text3)}
+
+/* MY PROFILE */
+.prof-cover{height:110px;background:linear-gradient(135deg,#081830,#030810);position:relative;flex-shrink:0}
+.prof-av-wrap{position:absolute;bottom:-42px;left:1rem;width:80px;height:80px;border-radius:50%;border:3px solid var(--bg);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.9rem;cursor:pointer;flex-shrink:0}
+.prof-av-inner-img{width:74px;height:74px;border-radius:50%;object-fit:cover;display:block}
+.prof-av-edit-badge{position:absolute;bottom:2px;right:2px;width:24px;height:24px;background:var(--neon);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;border:2.5px solid var(--bg);z-index:2;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.prof-body{padding:3rem 1rem 1rem;border-bottom:1px solid var(--bg3)}
+.prof-name{font-family:'Sora',sans-serif;font-size:1.15rem;font-weight:700}
+.prof-username{font-size:.8rem;color:var(--text3);margin-bottom:.3rem}
+.prof-bio-display{font-size:.84rem;color:var(--text2);line-height:1.5;margin-bottom:.75rem;min-height:1.2rem}
+.prof-stats{display:flex;gap:2rem;margin-bottom:1rem}
+.prof-stat{text-align:center;cursor:pointer}
+.prof-stat-n{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700}
+.prof-stat-l{font-size:.7rem;color:var(--text3)}
+.edit-profile-btn{width:100%;padding:.6rem;background:var(--bg3);border:1px solid var(--bg4);border-radius:10px;color:var(--text);font-size:.88rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s}
+.edit-profile-btn:active{background:var(--bg4)}
+.pic-upload-row{display:flex;align-items:center;gap:.55rem;background:var(--bg3);border:1px solid var(--bg4);border-radius:11px;padding:.65rem 1rem;cursor:pointer;width:100%;transition:.15s;margin-top:.6rem}
+.pic-upload-row:active{background:var(--bg4)}
+.pic-icon{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--neon),var(--neon2));display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.prof-menu-item{display:flex;align-items:center;gap:.7rem;padding:.72rem 0;border-bottom:1px solid var(--bg3);cursor:pointer;transition:.12s}
+.prof-menu-item:last-child{border:none}
+.prof-menu-item:active{opacity:.7}
+.pm-icon{width:34px;height:34px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.pm-text{flex:1;font-size:.88rem;font-weight:500}
+.pm-arrow{color:var(--text3);font-size:.8rem}
+.logout-btn{width:100%;padding:.82rem;background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.22);border-radius:11px;color:var(--red);font-size:.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s}
+.logout-btn:active{background:rgba(255,69,96,.18)}
+
+/* EDIT PROFILE SHEET */
+#s-editprofile{background:var(--bg)}
+
+/* NOTIFICATIONS */
+.notif-item{display:flex;align-items:center;gap:.75rem;padding:.82rem 1rem;border-bottom:1px solid rgba(17,26,46,.7);cursor:pointer;transition:.12s}
+.notif-item:active{background:var(--bg2)}
+.notif-item.unread{background:rgba(0,180,255,.04)}
+.ni-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden;flex-shrink:0}
+.ni-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.ni-info{flex:1;min-width:0}
+.ni-text{font-size:.86rem;line-height:1.4}
+.ni-text strong{font-weight:600}
+.ni-time{font-size:.72rem;color:var(--text3);margin-top:.15rem}
+.ni-follow-btn{padding:.34rem .8rem;border-radius:8px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;flex-shrink:0}
+.ni-follow-btn.follow{background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff}
+.ni-follow-btn.following{background:var(--bg3);color:var(--text2);border:1px solid var(--bg4)}
+
+/* FOLLOWERS/FOLLOWING LIST */
+#s-followlist{background:var(--bg)}
+.fl-item{display:flex;align-items:center;gap:.75rem;padding:.78rem 1rem;border-bottom:1px solid rgba(17,26,46,.7);cursor:pointer;transition:.12s}
+.fl-item:active{background:var(--bg2)}
+.fl-info{flex:1;min-width:0}
+.fl-name{font-size:.9rem;font-weight:600}
+.fl-user{font-size:.75rem;color:var(--text3)}
+
+/* ADMIN */
+#s-admin{background:var(--bg)}
+.admin-topbar{border-bottom:1px solid rgba(255,181,0,.18)}
+.admin-ttl{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--amber);flex:1}
+.admin-badge{background:linear-gradient(135deg,var(--amber),#e6a000);color:#060a14;font-size:.62rem;font-weight:800;padding:.1rem .4rem;border-radius:5px;letter-spacing:.05em;text-transform:uppercase}
+.stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;padding:.9rem 1rem}
+.stat-card{background:var(--bg2);border-radius:12px;padding:.8rem 1rem;border:1px solid var(--bg3)}
+.sc-num{font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:800;color:var(--neon)}
+.sc-lbl{font-size:.72rem;color:var(--text3);margin-top:.1rem}
+.admin-section-title{font-size:.7rem;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:.6rem 1rem .3rem}
+.admin-user-row{display:flex;align-items:center;gap:.7rem;padding:.68rem 1rem;border-bottom:1px solid rgba(17,26,46,.8)}
+.aur-info{flex:1;min-width:0}
+.aur-name{font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
+.aur-uname{font-size:.73rem;color:var(--text3)}
+.aur-badge{font-size:.58rem;padding:.08rem .32rem;border-radius:4px;font-weight:700}
+.aur-badge.you{background:rgba(255,181,0,.15);color:var(--amber);border:1px solid rgba(255,181,0,.2)}
+.aur-badge.active{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.aur-badge.removed{background:rgba(255,69,96,.1);color:var(--red);border:1px solid rgba(255,69,96,.2)}
+.aur-btn{padding:.28rem .65rem;border-radius:7px;font-size:.74rem;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:.12s}
+.aur-btn.remove{background:rgba(255,69,96,.12);color:var(--red);border:1px solid rgba(255,69,96,.2)}
+.aur-btn.restore{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.admin-secret-row{padding:.75rem 1rem;display:flex;gap:.5rem}
+.admin-secret-row input{flex:1;background:var(--bg2);border:1.5px solid var(--bg3);border-radius:9px;padding:.58rem .85rem;color:var(--text);font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none}
+.admin-secret-row input:focus{border-color:var(--amber)}
+.admin-secret-row button{padding:.58rem 1rem;background:linear-gradient(135deg,var(--amber),#e6a000);border:none;border-radius:9px;color:#060a14;font-size:.84rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+.notif-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;cursor:pointer;gap:1rem;transition:.12s}
+.notif-toggle-row:active{background:var(--bg3)}
+.ntoggle{width:44px;height:26px;border-radius:13px;background:var(--bg4);position:relative;flex-shrink:0;transition:.25s;border:1px solid var(--bg3)}
+.ntoggle.on{background:var(--neon);border-color:var(--neon)}
+.ntoggle::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.ntoggle.on::after{left:20px}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--bg4);color:var(--text);padding:.5rem 1.1rem;border-radius:20px;font-size:.82rem;opacity:0;transition:.22s;pointer-events:none;z-index:9999;white-space:nowrap;border:1px solid rgba(0,180,255,.15)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-glow1"></div>
+  <div class="splash-glow2"></div>
+  <svg class="splash-logo" width="96" height="96" viewBox="0 0 84 84" fill="none">
+    <defs>
+      <linearGradient id="scg" x1="0" y1="0" x2="84" y2="84" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0c1e3a"/><stop offset="100%" stop-color="#060e1e"/></linearGradient>
+      <linearGradient id="sbg1" x1="10" y1="20" x2="58" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#38d4ff"/><stop offset="100%" stop-color="#0088dd"/></linearGradient>
+      <linearGradient id="sbg2" x1="38" y1="12" x2="72" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#66e0ff"/><stop offset="100%" stop-color="#0066bb"/></linearGradient>
+      <filter id="sgf"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <radialGradient id="ssh" cx="28%" cy="25%" r="55%"><stop offset="0%" stop-color="#1a3a6a" stop-opacity=".6"/><stop offset="100%" stop-color="#0a1428" stop-opacity="0"/></radialGradient>
+    </defs>
+    <rect width="84" height="84" rx="23" fill="url(#scg)"/>
+    <rect width="84" height="84" rx="23" fill="none" stroke="#00b4ff" stroke-width=".8" stroke-opacity=".4"/>
+    <rect width="84" height="84" rx="23" fill="url(#ssh)"/>
+    <rect x="10" y="22" width="48" height="33" rx="9.5" fill="url(#sbg1)" filter="url(#sgf)"/>
+    <path d="M17 55 L10 68 L28 55Z" fill="url(#sbg1)"/>
+    <circle cx="24" cy="38.5" r="3.2" fill="white" opacity=".92"/>
+    <circle cx="34" cy="38.5" r="3.2" fill="white" opacity=".92"/>
+    <circle cx="44" cy="38.5" r="3.2" fill="white" opacity=".92"/>
+    <rect x="49" y="12" width="25" height="18" rx="7" fill="url(#sbg2)" opacity=".92"/>
+    <path d="M65 30 L72 38 L59 30Z" fill="url(#sbg2)" opacity=".92"/>
+    <rect x="55" y="18" width="7" height="2" rx="1" fill="white" opacity=".65"/>
+    <rect x="55" y="23" width="12" height="2" rx="1" fill="white" opacity=".45"/>
+  </svg>
+  <div class="splash-name">Nexus</div>
+  <div class="splash-tag">Connect beyond limits</div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+</div>
+
+<!-- AUTH -->
+<div class="screen" id="s-auth">
+  <div class="logo-wrap">
+    <svg class="logo-mark" width="84" height="84" viewBox="0 0 84 84" fill="none">
+      <defs>
+        <linearGradient id="cg" x1="0" y1="0" x2="84" y2="84" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0c1e3a"/><stop offset="100%" stop-color="#060e1e"/></linearGradient>
+        <linearGradient id="bg1" x1="10" y1="20" x2="58" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#38d4ff"/><stop offset="100%" stop-color="#0088dd"/></linearGradient>
+        <linearGradient id="bg2g" x1="38" y1="12" x2="72" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#66e0ff"/><stop offset="100%" stop-color="#0066bb"/></linearGradient>
+        <filter id="gf"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <radialGradient id="sh" cx="28%" cy="25%" r="55%"><stop offset="0%" stop-color="#1a3a6a" stop-opacity=".6"/><stop offset="100%" stop-color="#0a1428" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="84" height="84" rx="23" fill="url(#cg)"/>
+      <rect width="84" height="84" rx="23" fill="none" stroke="#00b4ff" stroke-width=".7" stroke-opacity=".3"/>
+      <rect width="84" height="84" rx="23" fill="url(#sh)"/>
+      <rect x="10" y="22" width="48" height="33" rx="9.5" fill="url(#bg1)" filter="url(#gf)"/>
+      <path d="M17 55 L10 68 L28 55Z" fill="url(#bg1)"/>
+      <circle cx="24" cy="38.5" r="3.2" fill="white" opacity=".9"/>
+      <circle cx="34" cy="38.5" r="3.2" fill="white" opacity=".9"/>
+      <circle cx="44" cy="38.5" r="3.2" fill="white" opacity=".9"/>
+      <rect x="49" y="12" width="25" height="18" rx="7" fill="url(#bg2g)" opacity=".9"/>
+      <path d="M65 30 L72 38 L59 30Z" fill="url(#bg2g)" opacity=".9"/>
+      <rect x="55" y="18" width="7" height="2" rx="1" fill="white" opacity=".65"/>
+      <rect x="55" y="23" width="12" height="2" rx="1" fill="white" opacity=".45"/>
+    </svg>
+    <div class="logo-name">Nexus</div>
+    <div class="logo-tag">Connect beyond limits</div>
+  </div>
+  <div class="atabs">
+    <div class="atab on" id="t-in" onclick="swt('in')">Sign In</div>
+    <div class="atab" id="t-up" onclick="swt('up')">Sign Up</div>
+  </div>
+  <div id="f-in">
+    <div class="field"><label>Username</label><input id="li-u" placeholder="@yourname" autocomplete="off" autocapitalize="off"></div>
+    <div class="field"><label>Password</label><input id="li-p" type="password" placeholder="••••••••"></div>
+    <button class="btn-main" onclick="doLogin()">Sign In →</button>
+    <p class="auth-foot">New here? <span onclick="swt('up')">Create account</span></p>
+  </div>
+  <div id="f-up" style="display:none">
+    <div class="field"><label>Full Name</label><input id="su-n" placeholder="Your name" autocomplete="off"></div>
+    <div class="field"><label>Username</label><input id="su-u" placeholder="@username" autocomplete="off" autocapitalize="off"></div>
+    <div class="field"><label>Password</label><input id="su-p" type="password" placeholder="Min 4 characters"></div>
+    <button class="btn-main" onclick="doSignup()">Create Account →</button>
+    <p class="auth-foot">Have an account? <span onclick="swt('in')">Sign in</span></p>
+  </div>
+</div>
+
+<!-- MESSAGES TAB -->
+<div class="screen off" id="s-dms" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <span class="ttl">Nexus</span>
+    <div class="my-av-btn" id="topbar-av" onclick="navTo('profile')"></div>
+  </div>
+  <div class="srch-bar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input placeholder="Search conversations…" oninput="filterDMs(this.value)" id="srch-dm">
+  </div>
+  <div class="scroll-area"><div class="sec-label">Recent</div><div id="dm-list"></div></div>
+  <nav class="bnav">
+    <button class="nb on" id="nb-dms" onclick="navTo('dms')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
+    <button class="nb" id="nb-search" onclick="navTo('search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</button>
+    <button class="nb" id="nb-notif" onclick="navTo('notif')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-dot" id="notif-dot"></div>Alerts</button>
+    <button class="nb" id="nb-profile" onclick="navTo('profile')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+  </nav>
+</div>
+
+<!-- CHAT SCREEN -->
+<div class="screen off" id="s-chat" style="display:flex;flex-direction:column">
+  <div class="chat-top">
+    <button class="backbtn" onclick="goBack()"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="cinfo" onclick="viewUserProfile(currentUser)">
+      <div class="cav" id="c-av"></div>
+      <div><div class="cname" id="c-name"></div><div class="cstat" id="c-stat"></div></div>
+    </div>
+  </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="cinput">
+    <input id="msg-in" placeholder="Message…" onkeydown="if(event.key==='Enter')sendMsg()">
+    <button class="sndbtn" onclick="sendMsg()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" style="margin-left:2px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
+</div>
+
+<!-- SEARCH TAB -->
+<div class="screen off" id="s-search" style="display:flex;flex-direction:column">
+  <div class="topbar"><span class="ttl">Search People</span></div>
+  <div class="srch-bar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="srch-people" placeholder="Search by username or name…" oninput="searchPeople(this.value)" autocomplete="off" autocapitalize="off">
+  </div>
+  <div class="scroll-area" id="search-results"></div>
+  <nav class="bnav">
+    <button class="nb" onclick="navTo('dms')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
+    <button class="nb on" onclick="navTo('search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</button>
+    <button class="nb" onclick="navTo('notif')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alerts</button>
+    <button class="nb" onclick="navTo('profile')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+  </nav>
+</div>
+
+<!-- NOTIFICATIONS TAB -->
+<div class="screen off" id="s-notif" style="display:flex;flex-direction:column">
+  <div class="topbar"><span class="ttl">Notifications</span></div>
+  <div class="scroll-area" id="notif-list"></div>
+  <nav class="bnav">
+    <button class="nb" onclick="navTo('dms')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
+    <button class="nb" onclick="navTo('search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</button>
+    <button class="nb on" onclick="navTo('notif')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alerts</button>
+    <button class="nb" onclick="navTo('profile')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+  </nav>
+</div>
+
+<!-- USER PROFILE VIEW -->
+<div class="screen off" id="s-userprofile" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <button class="backbtn" onclick="goBackFrom('s-userprofile')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="ttl ttl-sm" id="up-topbar-name"></span>
+  </div>
+  <div class="scroll-area">
+    <div class="up-cover"><div class="up-cover-grad"></div><div class="up-av-wrap" id="up-av"></div></div>
+    <div class="up-body">
+      <div class="up-name" id="up-name"></div>
+      <div class="up-username" id="up-username"></div>
+      <div class="up-bio" id="up-bio"></div>
+      <div class="up-actions">
+        <div class="up-follow-btn follow" id="up-follow-btn" onclick="toggleFollowProfile()">Follow</div>
+        <div class="up-msg-btn" onclick="msgUserProfile()">Message</div>
+      </div>
+      <div class="up-stats">
+        <div class="up-stat" onclick="openFollowList('followers',viewingUser)"><div class="up-stat-n" id="up-followers">0</div><div class="up-stat-l">Followers</div></div>
+        <div class="up-stat" onclick="openFollowList('following',viewingUser)"><div class="up-stat-n" id="up-following">0</div><div class="up-stat-l">Following</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOLLOWERS / FOLLOWING LIST -->
+<div class="screen off" id="s-followlist" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <button class="backbtn" onclick="goBackFrom('s-followlist')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="ttl ttl-sm" id="fl-title"></span>
+  </div>
+  <div class="scroll-area" id="fl-list"></div>
+</div>
+
+<!-- MY PROFILE TAB -->
+<div class="screen off" id="s-profile" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <span class="ttl">Profile</span>
+    <button class="ibt" id="admin-entry-btn" onclick="openAdmin()" style="color:var(--amber);display:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>
+  </div>
+  <div class="scroll-area">
+    <div style="position:relative">
+      <div class="prof-cover"></div>
+      <div class="prof-av-wrap" id="prof-av-wrap" onclick="document.getElementById('pic-input').click()">
+        <div id="prof-av-inner" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.9rem;border-radius:50%"></div>
+        <div class="prof-av-edit-badge">✏️</div>
+      </div>
+    </div>
+    <input type="file" id="pic-input" accept="image/*" style="display:none" onchange="handlePicUpload(this)">
+    <div class="prof-body">
+      <div class="prof-name" id="prof-name-d"></div>
+      <div class="prof-username" id="prof-uname-d"></div>
+      <div class="prof-bio-display" id="prof-bio-d"></div>
+      <div class="prof-stats">
+        <div class="prof-stat" onclick="openFollowList('followers','me')"><div class="prof-stat-n" id="prof-followers">0</div><div class="prof-stat-l">Followers</div></div>
+        <div class="prof-stat" onclick="openFollowList('following','me')"><div class="prof-stat-n" id="prof-following">0</div><div class="prof-stat-l">Following</div></div>
+      </div>
+      <button class="edit-profile-btn" onclick="openEditProfile()">Edit Profile</button>
+    </div>
+    <div style="padding:.85rem 1rem">
+      <div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:.55rem">Settings</div>
+      <div class="prof-menu-item" onclick="openInfoPage('s-privacy')"><div class="pm-icon">🔒</div><div class="pm-text">Privacy</div><div class="pm-arrow">›</div></div>
+      <div class="prof-menu-item" onclick="openInfoPage('s-notifsettings')"><div class="pm-icon">🔔</div><div class="pm-text">Notifications</div><div class="pm-arrow">›</div></div>
+      <div class="prof-menu-item" onclick="openInfoPage('s-about')"><div class="pm-icon">⚡</div><div class="pm-text">About Nexus</div><div class="pm-arrow">›</div></div>
+    </div>
+    <div style="padding:0 1rem 2rem"><button class="logout-btn" onclick="doLogout()">Sign Out</button></div>
+  </div>
+  <nav class="bnav">
+    <button class="nb" onclick="navTo('dms')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
+    <button class="nb" onclick="navTo('search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Search</button>
+    <button class="nb" onclick="navTo('notif')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alerts</button>
+    <button class="nb on" onclick="navTo('profile')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+  </nav>
+</div>
+
+<!-- EDIT PROFILE SCREEN -->
+<div class="screen off" id="s-editprofile" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <button class="backbtn" onclick="goBackFrom('s-editprofile')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="ttl ttl-sm">Edit Profile</span>
+    <button onclick="saveEditProfile()" style="background:linear-gradient(135deg,var(--neon),var(--neon2));border:none;border-radius:9px;color:#fff;font-size:.84rem;font-weight:700;padding:.4rem .9rem;cursor:pointer;font-family:'DM Sans',sans-serif">Save</button>
+  </div>
+  <div class="scroll-area" style="padding:1rem">
+    <div class="field"><label>Full Name</label><input id="ep-name" placeholder="Your full name" autocomplete="off"></div>
+    <div class="field"><label>Username</label><input id="ep-username" placeholder="@username" autocomplete="off" autocapitalize="off"></div>
+    <div class="field"><label>Bio</label><textarea id="ep-bio" placeholder="Tell people about yourself…" rows="3"></textarea></div>
+    <div class="field"><label>Gender</label>
+      <select id="ep-gender" style="color:var(--text);background:var(--bg2)">
+        <option value="" style="background:var(--bg2)">Prefer not to say</option>
+        <option value="Male" style="background:var(--bg2)">Male</option>
+        <option value="Female" style="background:var(--bg2)">Female</option>
+        <option value="Non-binary" style="background:var(--bg2)">Non-binary</option>
+        <option value="Other" style="background:var(--bg2)">Other</option>
+      </select>
+    </div>
+    <div class="field"><label>Website / Link</label><input id="ep-link" placeholder="https://yoursite.com" autocomplete="off" autocapitalize="off" type="url"></div>
+  </div>
+</div>
+
+<!-- PRIVACY SCREEN -->
+<div class="screen off info-page" id="s-privacy" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <button class="backbtn" onclick="goBackFrom('s-privacy')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="ttl ttl-sm">Privacy Policy</span>
+  </div>
+  <div class="scroll-area">
+    <div class="info-hero">
+      <div class="info-hero-icon" style="background:rgba(0,180,255,.1);border:1px solid rgba(0,180,255,.2)">🔒</div>
+      <div class="info-hero-text">
+        <h2>Your Privacy Matters</h2>
+        <p>Last updated: May 2026 · Nexus v2.0</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>What We Collect</h3>
+      <div class="info-card">
+        <strong>Account Information</strong>
+        <p>When you sign up, we collect your <b>name</b>, <b>username</b>, and <b>password</b>. Your password is never stored in plain text — it is securely handled on your device.</p>
+        <p>Any optional info you add — bio, gender, website link — is only used to display on your profile.</p>
+      </div>
+      <div class="info-card">
+        <strong>Profile Photo</strong>
+        <p>Your profile picture is stored locally on your own device. Nexus does not upload your photo to any external server. It stays with you, always.</p>
+      </div>
+      <div class="info-card">
+        <strong>Messages</strong>
+        <p>All messages you send are stored locally on your device only. We do not read, scan, or share your conversations with anyone — ever.</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>What We Don't Do</h3>
+      <div class="info-card">
+        <p>❌ We do <b>not</b> sell your data to advertisers.</p>
+        <p>❌ We do <b>not</b> track your location.</p>
+        <p>❌ We do <b>not</b> share your information with third parties.</p>
+        <p>❌ We do <b>not</b> show ads based on your activity.</p>
+        <p>✅ Nexus is and always will be <b>ad-free</b>.</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Your Rights</h3>
+      <div class="info-card">
+        <strong>Delete Your Data</strong>
+        <p>You can sign out and clear your browser's local storage at any time to permanently remove all your data from this device.</p>
+      </div>
+      <div class="info-card">
+        <strong>Data Portability</strong>
+        <p>Your data belongs to you. Since everything is stored locally, you are always in full control of it.</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Contact</h3>
+      <div class="info-card">
+        <p>For any privacy concerns or questions, reach out to us at:</p>
+        <p style="color:var(--neon);font-weight:600;margin-top:.3rem">privacy@nexus.app</p>
+      </div>
+    </div>
+    <div class="info-version">Nexus · Privacy Policy · v2.0<br>© 2026 Nexus. All rights reserved.</div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS SETTINGS SCREEN -->
+<div class="screen off info-page" id="s-notifsettings" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <button class="backbtn" onclick="goBackFrom('s-notifsettings')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="ttl ttl-sm">Notifications</span>
+  </div>
+  <div class="scroll-area">
+    <div class="info-hero">
+      <div class="info-hero-icon" style="background:rgba(255,181,0,.1);border:1px solid rgba(255,181,0,.2)">🔔</div>
+      <div class="info-hero-text">
+        <h2>Notification Settings</h2>
+        <p>Control what alerts you receive on Nexus</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Messages</h3>
+      <div class="info-card" style="padding:0">
+        <div class="notif-toggle-row" onclick="toggleNotifSetting('msg')">
+          <div><strong style="display:inline;font-size:.9rem">New Messages</strong><p style="margin:.1rem 0 0;font-size:.8rem">Get alerted when someone sends you a message</p></div>
+          <div class="ntoggle" id="ntog-msg"></div>
+        </div>
+        <div class="notif-toggle-row" style="border-top:1px solid var(--bg3)" onclick="toggleNotifSetting('msgprev')">
+          <div><strong style="display:inline;font-size:.9rem">Message Preview</strong><p style="margin:.1rem 0 0;font-size:.8rem">Show message content in notifications</p></div>
+          <div class="ntoggle" id="ntog-msgprev"></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>People</h3>
+      <div class="info-card" style="padding:0">
+        <div class="notif-toggle-row" onclick="toggleNotifSetting('follow')">
+          <div><strong style="display:inline;font-size:.9rem">New Followers</strong><p style="margin:.1rem 0 0;font-size:.8rem">When someone follows you</p></div>
+          <div class="ntoggle" id="ntog-follow"></div>
+        </div>
+        <div class="notif-toggle-row" style="border-top:1px solid var(--bg3)" onclick="toggleNotifSetting('likes')">
+          <div><strong style="display:inline;font-size:.9rem">Likes & Reactions</strong><p style="margin:.1rem 0 0;font-size:.8rem">When someone reacts to your content</p></div>
+          <div class="ntoggle" id="ntog-likes"></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>System</h3>
+      <div class="info-card" style="padding:0">
+        <div class="notif-toggle-row" onclick="toggleNotifSetting('updates')">
+          <div><strong style="display:inline;font-size:.9rem">App Updates</strong><p style="margin:.1rem 0 0;font-size:.8rem">News about new Nexus features</p></div>
+          <div class="ntoggle" id="ntog-updates"></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>About Notifications</h3>
+      <div class="info-card">
+        <p>Nexus notifications are handled entirely on your device. We never send push notifications through external servers. Your alert preferences are saved locally and apply immediately.</p>
+      </div>
+    </div>
+    <div class="info-version">Changes save automatically</div>
+  </div>
+</div>
+
+<!-- ABOUT NEXUS SCREEN -->
+<div class="screen off info-page" id="s-about" style="display:flex;flex-direction:column">
+  <div class="topbar">
+    <button class="backbtn" onclick="goBackFrom('s-about')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="ttl ttl-sm">About Nexus</span>
+  </div>
+  <div class="scroll-area">
+    <div style="background:var(--bg2);padding:2rem 1rem 1.5rem;display:flex;flex-direction:column;align-items:center;border-bottom:1px solid var(--bg3)">
+      <svg width="72" height="72" viewBox="0 0 84 84" fill="none" style="margin-bottom:.9rem">
+        <defs>
+          <linearGradient id="acg" x1="0" y1="0" x2="84" y2="84" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0c1e3a"/><stop offset="100%" stop-color="#060e1e"/></linearGradient>
+          <linearGradient id="abg1" x1="10" y1="20" x2="58" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#38d4ff"/><stop offset="100%" stop-color="#0088dd"/></linearGradient>
+          <linearGradient id="abg2" x1="38" y1="12" x2="72" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#66e0ff"/><stop offset="100%" stop-color="#0066bb"/></linearGradient>
+          <filter id="agf"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="ash" cx="28%" cy="25%" r="55%"><stop offset="0%" stop-color="#1a3a6a" stop-opacity=".6"/><stop offset="100%" stop-color="#0a1428" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="84" height="84" rx="23" fill="url(#acg)"/>
+        <rect width="84" height="84" rx="23" fill="none" stroke="#00b4ff" stroke-width=".8" stroke-opacity=".4"/>
+        <rect width="84" height="84" rx="23" fill="url(#ash)"/>
+        <rect x="10" y="22" width="48" height="33" rx="9.5" fill="url(#abg1)" filter="url(#agf)"/>
+        <path d="M17 55 L10 68 L28 55Z" fill="url(#abg1)"/>
+        <circle cx="24" cy="38.5" r="3.2" fill="white" opacity=".92"/>
+        <circle cx="34" cy="38.5" r="3.2" fill="white" opacity=".92"/>
+        <circle cx="44" cy="38.5" r="3.2" fill="white" opacity=".92"/>
+        <rect x="49" y="12" width="25" height="18" rx="7" fill="url(#abg2)" opacity=".92"/>
+        <path d="M65 30 L72 38 L59 30Z" fill="url(#abg2)" opacity=".92"/>
+        <rect x="55" y="18" width="7" height="2" rx="1" fill="white" opacity=".65"/>
+        <rect x="55" y="23" width="12" height="2" rx="1" fill="white" opacity=".45"/>
+      </svg>
+      <div style="font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#38cfff,#00b4ff,#0077ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 12px rgba(0,180,255,.5))">Nexus</div>
+      <div style="font-size:.72rem;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;margin-top:.2rem">Connect beyond limits</div>
+      <div style="margin-top:.8rem;display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center">
+        <span class="info-tag">v2.0</span>
+        <span class="info-tag">2026</span>
+        <span class="info-tag">Ad-Free</span>
+        <span class="info-tag">Private</span>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>What is Nexus?</h3>
+      <div class="info-card">
+        <p>Nexus is a modern, privacy-first messaging and social platform built for real human connection. No algorithms deciding what you see. No ads interrupting your flow. Just you and the people you care about.</p>
+        <p>We believe communication should be fast, beautiful, and completely private.</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Features</h3>
+      <div class="info-card">
+        <strong>💬 Real-time Messaging</strong>
+        <p>Send and receive messages with near-zero delay. Clean, distraction-free chat interface.</p>
+      </div>
+      <div class="info-card">
+        <strong>🔍 People Search</strong>
+        <p>Find and connect with anyone on Nexus by their username or real name. Follow, message, and build your network.</p>
+      </div>
+      <div class="info-card">
+        <strong>👤 Rich Profiles</strong>
+        <p>Customize your profile with a photo, bio, gender, and website link. Show the world who you are.</p>
+      </div>
+      <div class="info-card">
+        <strong>🔔 Smart Notifications</strong>
+        <p>Get notified when someone follows you. Follow back right from the notification — no extra steps.</p>
+      </div>
+      <div class="info-card">
+        <strong>🛡️ Admin Panel</strong>
+        <p>Built-in moderation tools for platform admins. Monitor users, remove bad actors, and keep the community safe.</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Our Values</h3>
+      <div class="info-card">
+        <p>🔒 <b>Privacy first</b> — Your data never leaves your device.</p>
+        <p>⚡ <b>Speed</b> — Responses in under a second, every time.</p>
+        <p>🎨 <b>Design</b> — Beautiful, modern UI that feels great to use.</p>
+        <p>🚫 <b>No ads, ever</b> — Nexus will always be ad-free.</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Built With</h3>
+      <div class="info-card">
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+          <span class="info-tag">HTML5</span><span class="info-tag">CSS3</span><span class="info-tag">Vanilla JS</span><span class="info-tag">LocalStorage</span><span class="info-tag">Sora Font</span><span class="info-tag">DM Sans</span><span class="info-tag">SVG Icons</span>
+        </div>
+      </div>
+    </div>
+    <div class="info-version">Nexus v2.0 · © 2026 Nexus<br>Made with ❤️ · All rights reserved<br>contact@nexus.app</div>
+  </div>
+</div>
+<div class="screen off" id="s-admin" style="display:flex;flex-direction:column">
+  <div class="topbar admin-topbar">
+    <button class="backbtn" onclick="show('s-profile')" style="color:var(--amber)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="admin-ttl">Admin Panel</span>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div class="scroll-area">
+    <div class="stat-cards" id="admin-stats"></div>
+    <div style="padding:.4rem 1rem .15rem;font-size:.7rem;color:var(--amber);text-transform:uppercase;letter-spacing:.07em;font-weight:700">Unlock</div>
+    <div class="admin-secret-row">
+      <input id="admin-pw-input" type="password" placeholder="Admin password">
+      <button onclick="unlockAdmin()">Unlock</button>
+    </div>
+    <div id="admin-locked-msg" style="padding:.3rem 1rem .6rem;font-size:.8rem;color:var(--text3)">Enter password to manage users.</div>
+    <div id="admin-user-section" style="display:none">
+      <div class="admin-section-title">All Users</div>
+      <div id="admin-user-list"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast-el"></div>
+
+<script>
+const ADMIN_PW = 'nexus2025';
+const SAMPLE_USERS = [
+  {name:'Aria Chen',   username:'aria.chen', bg:'#1a0d2a', em:'🌸', online:true,  pic:null, bio:'Designer & dreamer ✨', gender:'Female', link:'', followers:120, following:84},
+  {name:'Zane Okafor', username:'zane.ok',   bg:'#2a1a0d', em:'🔥', online:true,  pic:null, bio:'Fullstack dev 💻', gender:'Male', link:'', followers:340, following:210},
+  {name:'Luna Park',   username:'luna.p',    bg:'#0d1a2a', em:'🌙', online:false, pic:null, bio:'Photographer 📸', gender:'Female', link:'', followers:89,  following:63},
+  {name:'Rishi Sharma',username:'rishi_s',   bg:'#0d2a1a', em:'⚡', online:true,  pic:null, bio:'Music producer 🎵', gender:'Male', link:'', followers:560, following:301},
+  {name:'Mia Torres',  username:'mia.t',     bg:'#2a0d1a', em:'🎨', online:false, pic:null, bio:'Art & culture 🎭', gender:'Female', link:'', followers:77,  following:55},
+  {name:'Kai Nakamura',username:'kai.nk',    bg:'#0d2a3a', em:'🚀', online:true,  pic:null, bio:'Startup founder 🚀', gender:'Male', link:'', followers:980, following:412},
+];
+const INIT_MSGS = {
+  'aria.chen':['Hey! How are you? 😊','Your profile looks amazing!','We should hang out soon 🌸'],
+  'zane.ok':  ['Yoo what\'s up!','Did you see that new show? 🔥','Absolutely insane bro'],
+  'luna.p':   ['Good morning! ☀️','How\'s your day going?'],
+  'rishi_s':  ['Check my new track 🎵','Just dropped it!','Tell me what you think ⚡'],
+  'mia.t':    ['Hey stranger 👋','Long time no chat!','What you been up to? 🎨'],
+  'kai.nk':   ['Big news — I got funded! 🚀','Let\'s celebrate!','You free this week?'],
+};
+const TIMES  = ['2m ago','15m ago','1h ago','3h ago','5h ago','1d ago'];
+const UNREAD = [2,1,0,3,0,1];
+const REPLIES= ['Haha so true! 😄','No way!! 😱','Yeah totally 👀','Tell me more!','Lmao 💀','Wild honestly','Same 🤣','Omg yes!! 🙌','Wait seriously?? 😮','That\'s fire 🔥','Facts facts','I\'m crying 😂','Let\'s do it!!','Okay but…','Can\'t believe it!','Love that ✨','Bro 😭'];
+
+let me={}, convos={}, currentUser=null, prevScreen='s-dms';
+let follows={};        // follows[username]=true
+let myFollowers={};    // myFollowers[username]=true (who follows me)
+let removedUsers={};
+let notifications=[];  // [{type,from,time,read}]
+let viewingUser=null, followListMode=null, followListTarget=null;
+
+/* HELPERS */
+function showToast(msg){const el=document.getElementById('toast-el');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000)}
+function fmt(d){return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+function save(){localStorage.setItem('nexus_me',JSON.stringify(me))}
+function saveFollows(){localStorage.setItem('nexus_follows',JSON.stringify(follows))}
+function saveFollowers(){localStorage.setItem('nexus_followers',JSON.stringify(myFollowers))}
+function saveRemoved(){localStorage.setItem('nexus_removed',JSON.stringify(removedUsers))}
+function saveNotifs(){localStorage.setItem('nexus_notifs',JSON.stringify(notifications))}
+
+function show(id){
+  ['s-auth','s-dms','s-chat','s-search','s-notif','s-userprofile','s-followlist','s-profile','s-editprofile','s-admin','s-privacy','s-notifsettings','s-about']
+  .forEach(s=>document.getElementById(s).classList.toggle('off',s!==id));
+}
+function goBackFrom(from){show(prevScreen||'s-dms')}
+
+function allUsers(){
+  const extra=JSON.parse(localStorage.getItem('nexus_all_users')||'[]');
+  return [...SAMPLE_USERS,...extra.filter(u=>!SAMPLE_USERS.find(s=>s.username===u.username))];
+}
+function getUserByUsername(uid){
+  if(uid==='me') return me;
+  return allUsers().find(u=>u.username===uid)||null;
+}
+function registerUser(u){
+  const all=JSON.parse(localStorage.getItem('nexus_all_users')||'[]');
+  if(!all.find(x=>x.username===u.username)){all.push(u);localStorage.setItem('nexus_all_users',JSON.stringify(all))}
+}
+function updateRegisteredUser(){
+  const all=JSON.parse(localStorage.getItem('nexus_all_users')||'[]');
+  const idx=all.findIndex(x=>x.username===me.username);
+  if(idx>=0){all[idx]={...all[idx],...me};localStorage.setItem('nexus_all_users',JSON.stringify(all))}
+}
+
+/* AUTH */
+function swt(t){
+  document.getElementById('f-in').style.display=t==='in'?'':'none';
+  document.getElementById('f-up').style.display=t==='up'?'':'none';
+  document.getElementById('t-in').classList.toggle('on',t==='in');
+  document.getElementById('t-up').classList.toggle('on',t==='up');
+}
+function doLogin(){
+  const u=document.getElementById('li-u').value.trim().replace('@','');
+  const p=document.getElementById('li-p').value.trim();
+  if(!u||!p){showToast('Fill in all fields');return}
+  const saved=localStorage.getItem('nexus_me');
+  if(saved){const s=JSON.parse(saved);if(s.username.toLowerCase()===u.toLowerCase()&&s.password===p){me=s;launch();return}}
+  const all=JSON.parse(localStorage.getItem('nexus_all_users')||'[]');
+  const found=all.find(x=>x.username.toLowerCase()===u.toLowerCase()&&x.password===p);
+  if(found){me=found;save();launch();return}
+  showToast('Wrong credentials or no account');
+}
+function doSignup(){
+  const n=document.getElementById('su-n').value.trim();
+  const u=document.getElementById('su-u').value.trim().replace('@','');
+  const p=document.getElementById('su-p').value.trim();
+  if(!n||!u||!p){showToast('Fill in all fields');return}
+  if(p.length<4){showToast('Password min 4 chars');return}
+  const all=JSON.parse(localStorage.getItem('nexus_all_users')||'[]');
+  if(SAMPLE_USERS.find(x=>x.username===u)||all.find(x=>x.username===u)){showToast('Username taken');return}
+  me={name:n,username:u,password:p,pic:null,bio:'',gender:'',link:'',
+    bg:['#1a0d2a','#2a1a0d','#0d1a2a','#0d2a1a','#2a0d1a','#0d2a3a'][Math.floor(Math.random()*6)],
+    em:['😎','🙌','💫','🌟','🎯','🔮'][Math.floor(Math.random()*6)],
+    online:true,followers:0,following:0};
+  save();registerUser(me);launch();
+}
+function doLogout(){me={};convos={};currentUser=null;follows={};myFollowers={};notifications=[];show('s-auth')}
+
+/* LAUNCH */
+function launch(){
+  follows=JSON.parse(localStorage.getItem('nexus_follows')||'{}');
+  myFollowers=JSON.parse(localStorage.getItem('nexus_followers')||'{}');
+  removedUsers=JSON.parse(localStorage.getItem('nexus_removed')||'{}');
+  notifications=JSON.parse(localStorage.getItem('nexus_notifs')||'[]');
+  SAMPLE_USERS.forEach((u,i)=>{
+    if(!removedUsers[u.username]){
+      convos[u.username]={user:u,msgs:(INIT_MSGS[u.username]||[]).map((text,j)=>({text,mine:false,ts:new Date(Date.now()-(INIT_MSGS[u.username].length-j)*90000)})),unread:UNREAD[i]};
+    }
+  });
+  document.getElementById('admin-entry-btn').style.display=me.username==='admin'?'flex':'none';
+  updateTopbarAv();
+  updateNotifDot();
+  buildDMs();
+  navTo('dms');
+  // simulate: after 5s Aria follows you (demo of follow notification)
+  setTimeout(()=>{
+    if(!notifications.find(n=>n.from==='aria.chen'&&n.type==='follow')){
+      addNotif({type:'follow',from:'aria.chen',time:'Just now',read:false});
+    }
+  },5000);
+}
+
+/* NAVIGATION */
+function navTo(tab){
+  prevScreen='s-'+tab;
+  if(tab==='dms'){show('s-dms');loadMyProfile()}
+  else if(tab==='search'){show('s-search');searchPeople('')}
+  else if(tab==='notif'){show('s-notif');renderNotifs();markNotifsRead()}
+  else if(tab==='profile'){loadMyProfile();show('s-profile')}
+}
+function goBack(){currentUser=null;show(prevScreen||'s-dms')}
+
+/* TOPBAR AV */
+function updateTopbarAv(){
+  const el=document.getElementById('topbar-av');
+  if(me.pic){el.innerHTML=`<img src="${me.pic}">`}
+  else{el.textContent=(me.name||'?')[0].toUpperCase();el.style.fontWeight='700';el.style.fontSize='.85rem'}
+}
+
+/* NOTIF DOT */
+function updateNotifDot(){
+  const unread=notifications.filter(n=>!n.read).length;
+  document.getElementById('notif-dot').classList.toggle('show',unread>0);
+}
+function addNotif(n){
+  notifications.unshift(n);
+  saveNotifs();
+  updateNotifDot();
+}
+function markNotifsRead(){
+  notifications.forEach(n=>n.read=true);
+  saveNotifs();
+  updateNotifDot();
+}
+
+/* DM LIST */
+function buildDMs(q=''){
+  const el=document.getElementById('dm-list');
+  const keys=Object.keys(convos).filter(uid=>{
+    if(removedUsers[uid])return false;
+    const u=convos[uid].user;
+    return !q||u.name.toLowerCase().includes(q.toLowerCase())||u.username.toLowerCase().includes(q.toLowerCase());
+  });
+  if(!keys.length){el.innerHTML='<p style="text-align:center;color:var(--text3);padding:2rem;font-size:.85rem">No conversations yet</p>';return}
+  el.innerHTML=keys.map((uid,i)=>{
+    const c=convos[uid];const last=c.msgs.length?c.msgs[c.msgs.length-1].text:'Say hello!';const unr=c.unread;
+    const avH=c.user.pic?`<div class="av" style="background:${c.user.bg}"><img src="${c.user.pic}"></div>`:`<div class="av" style="background:${c.user.bg}">${c.user.em}</div>`;
+    return`<div class="dmi" onclick="openChat('${uid}')">
+      <div class="avw">${avH}${c.user.online?'<div class="onldot"></div>':''}</div>
+      <div class="dinfo">
+        <div class="dname-row">${c.user.name}<span class="dtime">${TIMES[i%TIMES.length]}</span></div>
+        <div class="dprev"><span>${last}</span>${unr?`<span class="ubadge">${unr}</span>`:''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function filterDMs(v){buildDMs(v)}
+
+/* OPEN CHAT */
+function openChat(uid){
+  if(removedUsers[uid]){showToast('User unavailable');return}
+  if(!convos[uid]){
+    const u=getUserByUsername(uid);if(!u)return;
+    convos[uid]={user:u,msgs:[],unread:0};
+  }
+  const u=convos[uid].user;currentUser=uid;convos[uid].unread=0;
+  const av=document.getElementById('c-av');
+  av.style.background=u.bg;av.innerHTML=(u.pic?`<img src="${u.pic}">`:u.em)+(u.online?'<div class="conl"></div>':'');
+  document.getElementById('c-name').textContent=u.name;
+  const stat=document.getElementById('c-stat');stat.textContent=u.online?'Active now':'Last seen recently';stat.style.color=u.online?'var(--online)':'var(--text3)';
+  prevScreen=document.querySelector('.screen:not(.off)')?.id||'s-dms';
+  renderMsgs();show('s-chat');
+  setTimeout(()=>{const m=document.getElementById('msgs');m.scrollTop=m.scrollHeight;document.getElementById('msg-in').focus()},40);
+  buildDMs();
+}
+
+/* MESSAGES */
+function renderMsgs(){
+  const c=convos[currentUser];const el=document.getElementById('msgs');
+  let html='<div class="dsep">Today</div>';
+  c.msgs.forEach(m=>{
+    const mine=m.mine;
+    const avH=!mine?`<div class="mav" style="background:${c.user.bg}">${c.user.pic?`<img src="${c.user.pic}">`:c.user.em}</div>`:'';
+    html+=`<div class="mw ${mine?'me':''}">${avH}<div class="msg-col"><div class="mb ${mine?'mn':'th'}">${m.text}</div><span class="mt">${fmt(m.ts)}</span></div></div>`;
+  });
+  el.innerHTML=html;el.scrollTop=el.scrollHeight;
+}
+function sendMsg(){
+  const inp=document.getElementById('msg-in');const txt=inp.value.trim();if(!txt||!currentUser)return;
+  inp.value='';convos[currentUser].msgs.push({text:txt,mine:true,ts:new Date()});renderMsgs();buildDMs();
+  const uid=currentUser;const el=document.getElementById('msgs');
+  const div=document.createElement('div');div.className='mw';div.id='typing-ind';
+  div.innerHTML=`<div class="mav" style="background:${convos[uid].user.bg}">${convos[uid].user.pic?`<img src="${convos[uid].user.pic}">`:convos[uid].user.em}</div><div class="msg-col"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  el.appendChild(div);el.scrollTop=el.scrollHeight;
+  setTimeout(()=>{
+    if(currentUser!==uid)return;
+    const ind=document.getElementById('typing-ind');if(ind)ind.remove();
+    const r=REPLIES[Math.floor(Math.random()*REPLIES.length)];
+    convos[uid].msgs.push({text:r,mine:false,ts:new Date()});renderMsgs();buildDMs();
+  },300+Math.random()*300);
+}
+
+/* SEARCH */
+function searchPeople(q){
+  const el=document.getElementById('search-results');
+  q=(q||'').trim().toLowerCase();
+  const users=allUsers().filter(u=>u.username!==me.username&&!removedUsers[u.username]&&(!q||u.name.toLowerCase().includes(q)||u.username.toLowerCase().includes(q)));
+  if(!users.length){el.innerHTML=`<div class="search-empty"><div class="se-icon">${q?'😶':'👥'}</div><p>${q?'No users found for<br>"'+q+'"':'All users on Nexus<br>will appear here'}</p></div>`;return}
+  el.innerHTML=users.map(u=>{
+    const isF=follows[u.username];
+    const avH=u.pic?`<div class="av" style="background:${u.bg}"><img src="${u.pic}"></div>`:`<div class="av" style="background:${u.bg}">${u.em}</div>`;
+    return`<div class="user-result" onclick="viewUserProfile('${u.username}')">
+      <div class="avw">${avH}${u.online?'<div class="onldot"></div>':''}</div>
+      <div class="ur-info"><div class="ur-name">${u.name}</div><div class="ur-user">@${u.username} · ${u.followers||0} followers</div></div>
+      <button class="follow-btn ${isF?'following':'follow'}" id="fbtn-${u.username}" onclick="event.stopPropagation();toggleFollowSearch('${u.username}')">${isF?'Following':'Follow'}</button>
+    </div>`;
+  }).join('');
+}
+function toggleFollowSearch(username){
+  const wasF=follows[username];follows[username]=!wasF;saveFollows();
+  const btn=document.getElementById('fbtn-'+username);
+  if(btn){btn.textContent=follows[username]?'Following':'Follow';btn.className='follow-btn '+(follows[username]?'following':'follow')}
+  // update count in search UI
+  searchPeople(document.getElementById('srch-people').value);
+  showToast(follows[username]?`Following @${username}`:`Unfollowed @${username}`);
+}
+
+/* USER PROFILE VIEW */
+function viewUserProfile(uid){
+  const u=getUserByUsername(uid);if(!u)return;
+  viewingUser=uid;
+  prevScreen=document.querySelector('.screen:not(.off)')?.id||'s-dms';
+  document.getElementById('up-topbar-name').textContent=u.name;
+  document.getElementById('up-name').textContent=u.name;
+  document.getElementById('up-username').textContent='@'+u.username;
+  document.getElementById('up-bio').textContent=u.bio||'';
+  // Followers count: base + if I follow them
+  const baseF=u.followers||0;
+  const iFollow=follows[uid];
+  document.getElementById('up-followers').textContent=iFollow?baseF+1:baseF;
+  document.getElementById('up-following').textContent=u.following||0;
+  const av=document.getElementById('up-av');av.style.background=u.bg;av.innerHTML=u.pic?`<img src="${u.pic}">`:u.em;
+  const fb=document.getElementById('up-follow-btn');
+  fb.textContent=iFollow?'Following':'Follow';fb.className='up-follow-btn '+(iFollow?'following':'follow');
+  show('s-userprofile');
+}
+function toggleFollowProfile(){
+  if(!viewingUser)return;
+  const wasF=follows[viewingUser];follows[viewingUser]=!wasF;saveFollows();
+  const isNow=follows[viewingUser];
+  const fb=document.getElementById('up-follow-btn');
+  fb.textContent=isNow?'Following':'Follow';fb.className='up-follow-btn '+(isNow?'following':'follow');
+  const countEl=document.getElementById('up-followers');
+  countEl.textContent=parseInt(countEl.textContent)+(isNow?1:-1);
+  // If I follow someone, simulate them noticing (they'd get a notif in real app)
+  showToast(isNow?`Following @${viewingUser}`:`Unfollowed @${viewingUser}`);
+}
+function msgUserProfile(){if(!viewingUser)return;openChat(viewingUser)}
+
+/* FOLLOW LIST */
+function openFollowList(mode, targetUid){
+  followListMode=mode;followListTarget=targetUid;
+  prevScreen=document.querySelector('.screen:not(.off)')?.id||'s-profile';
+  document.getElementById('fl-title').textContent=mode==='followers'?'Followers':'Following';
+  renderFollowList();
+  show('s-followlist');
+}
+function renderFollowList(){
+  const el=document.getElementById('fl-list');
+  let users=[];
+  if(followListTarget==='me'){
+    if(followListMode==='followers'){
+      // People who follow me (stored in myFollowers + simulated)
+      users=allUsers().filter(u=>myFollowers[u.username]);
+    } else {
+      // People I follow
+      users=allUsers().filter(u=>follows[u.username]);
+    }
+  } else {
+    // Viewing someone else's profile
+    const target=getUserByUsername(followListTarget);
+    if(followListMode==='followers'){
+      // Show some simulated followers for demo
+      users=allUsers().filter(u=>u.username!==followListTarget).slice(0,Math.min(target?.followers||0,allUsers().length));
+    } else {
+      users=allUsers().filter(u=>u.username!==followListTarget).slice(0,Math.min(target?.following||0,allUsers().length));
+    }
+  }
+  if(!users.length){el.innerHTML='<div class="search-empty"><div class="se-icon">👥</div><p>No '+(followListMode==='followers'?'followers':'following')+' yet</p></div>';return}
+  el.innerHTML=users.map(u=>{
+    const isF=follows[u.username];
+    const avH=u.pic?`<div class="av" style="background:${u.bg}"><img src="${u.pic}"></div>`:`<div class="av" style="background:${u.bg}">${u.em}</div>`;
+    return`<div class="fl-item" onclick="viewUserProfile('${u.username}')">
+      <div class="avw">${avH}${u.online?'<div class="onldot"></div>':''}</div>
+      <div class="fl-info"><div class="fl-name">${u.name}</div><div class="fl-user">@${u.username}</div></div>
+      ${u.username!==me.username?`<button class="follow-btn ${isF?'following':'follow'}" onclick="event.stopPropagation();toggleFollowFL('${u.username}')">${isF?'Following':'Follow'}</button>`:''}
+    </div>`;
+  }).join('');
+}
+function toggleFollowFL(username){
+  follows[username]=!follows[username];saveFollows();
+  renderFollowList();
+  showToast(follows[username]?`Following @${username}`:`Unfollowed @${username}`);
+}
+
+/* NOTIFICATIONS */
+function renderNotifs(){
+  const el=document.getElementById('notif-list');
+  if(!notifications.length){el.innerHTML='<div class="search-empty"><div class="se-icon">🔔</div><p>No notifications yet.<br>When someone follows you,<br>it shows up here!</p></div>';return}
+  el.innerHTML=notifications.map((n,i)=>{
+    const u=getUserByUsername(n.from)||{name:n.from,username:n.from,bg:'#1a1a2a',em:'👤',pic:null};
+    const avH=u.pic?`<div class="ni-av" style="background:${u.bg}"><img src="${u.pic}"></div>`:`<div class="ni-av" style="background:${u.bg}">${u.em}</div>`;
+    const isF=follows[n.from];
+    let actionHTML='';
+    if(n.type==='follow'){
+      actionHTML=`<button class="ni-follow-btn ${isF?'following':'follow'}" onclick="toggleFollowNotif('${n.from}',${i})">${isF?'Following':'Follow Back'}</button>`;
+    }
+    let text='';
+    if(n.type==='follow')text=`<strong>${u.name}</strong> started following you.`;
+    else if(n.type==='like')text=`<strong>${u.name}</strong> liked your message.`;
+    return`<div class="notif-item ${n.read?'':'unread'}" onclick="viewUserProfile('${n.from}')">
+      ${avH}
+      <div class="ni-info"><div class="ni-text">${text}</div><div class="ni-time">${n.time}</div></div>
+      ${actionHTML}
+    </div>`;
+  }).join('');
+}
+function toggleFollowNotif(username, idx){
+  event.stopPropagation();
+  follows[username]=!follows[username];saveFollows();
+  renderNotifs();
+  showToast(follows[username]?`Following @${username}`:`Unfollowed @${username}`);
+}
+
+/* MY PROFILE */
+function loadMyProfile(){
+  document.getElementById('prof-name-d').textContent=me.name||'';
+  document.getElementById('prof-uname-d').textContent='@'+(me.username||'');
+  document.getElementById('prof-bio-d').textContent=me.bio||'Add a bio';
+  document.getElementById('prof-bio-d').style.color=me.bio?'var(--text2)':'var(--text3)';
+  document.getElementById('prof-followers').textContent=Object.keys(myFollowers).length;
+  document.getElementById('prof-following').textContent=Object.keys(follows).length;
+  const wrap=document.getElementById('prof-av-wrap');
+  const inner=document.getElementById('prof-av-inner');
+  if(me.pic){
+    inner.innerHTML=`<img class="prof-av-inner-img" src="${me.pic}">`;
+    inner.style.fontSize='0';
+  } else {
+    inner.innerHTML=(me.name||'?')[0].toUpperCase();
+    inner.style.fontSize='2rem';
+    inner.style.color='var(--text)';
+    inner.style.width='100%';
+    inner.style.height='100%';
+    inner.style.display='flex';
+    inner.style.alignItems='center';
+    inner.style.justifyContent='center';
+    inner.style.borderRadius='50%';
+  }
+  document.getElementById('admin-entry-btn').style.display=me.username==='admin'?'flex':'none';
+}
+
+/* EDIT PROFILE */
+function openEditProfile(){
+  document.getElementById('ep-name').value=me.name||'';
+  document.getElementById('ep-username').value=me.username||'';
+  document.getElementById('ep-bio').value=me.bio||'';
+  document.getElementById('ep-gender').value=me.gender||'';
+  document.getElementById('ep-link').value=me.link||'';
+  prevScreen='s-profile';
+  show('s-editprofile');
+}
+function saveEditProfile(){
+  const newName=document.getElementById('ep-name').value.trim();
+  const newUser=document.getElementById('ep-username').value.trim().replace('@','');
+  const newBio=document.getElementById('ep-bio').value.trim();
+  const newGender=document.getElementById('ep-gender').value;
+  const newLink=document.getElementById('ep-link').value.trim();
+  if(!newName){showToast('Name cannot be empty');return}
+  if(!newUser){showToast('Username cannot be empty');return}
+  // check username conflict
+  if(newUser!==me.username){
+    const all=allUsers();
+    if(all.find(u=>u.username===newUser&&u.username!==me.username)){showToast('Username already taken');return}
+  }
+  me.name=newName;me.username=newUser;me.bio=newBio;me.gender=newGender;me.link=newLink;
+  save();updateRegisteredUser();
+  loadMyProfile();updateTopbarAv();
+  show('s-profile');
+  showToast('Profile updated ✅');
+}
+
+/* PHOTO UPLOAD */
+function handlePicUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    me.pic=e.target.result;save();updateRegisteredUser();
+    loadMyProfile();updateTopbarAv();
+    showToast('Profile photo updated ✨');
+    // reset input so same file can be picked again
+    input.value='';
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ADMIN */
+function openAdmin(){buildAdminStats();show('s-admin')}
+function buildAdminStats(){
+  const users=allUsers();const active=users.filter(u=>!removedUsers[u.username]).length;const removed=users.filter(u=>removedUsers[u.username]).length;
+  document.getElementById('admin-stats').innerHTML=`
+    <div class="stat-card"><div class="sc-num">${users.length}</div><div class="sc-lbl">Total Users</div></div>
+    <div class="stat-card"><div class="sc-num" style="color:var(--green)">${active}</div><div class="sc-lbl">Active</div></div>
+    <div class="stat-card"><div class="sc-num" style="color:var(--red)">${removed}</div><div class="sc-lbl">Removed</div></div>
+    <div class="stat-card"><div class="sc-num" style="color:var(--amber)">${Object.keys(convos).length}</div><div class="sc-lbl">Convos</div></div>`;
+}
+function unlockAdmin(){
+  if(document.getElementById('admin-pw-input').value!==ADMIN_PW){showToast('Wrong password');return}
+  document.getElementById('admin-locked-msg').style.display='none';
+  document.getElementById('admin-user-section').style.display='';
+  renderAdminUsers();showToast('Admin unlocked ✅');
+}
+function renderAdminUsers(){
+  const users=allUsers();const el=document.getElementById('admin-user-list');
+  el.innerHTML=users.map(u=>{
+    const isMe=u.username===me.username;const isRemoved=removedUsers[u.username];
+    const avH=u.pic?`<div class="av" style="background:${u.bg};width:38px;height:38px"><img src="${u.pic}"></div>`:`<div class="av" style="background:${u.bg};width:38px;height:38px;font-size:.95rem">${u.em}</div>`;
+    return`<div class="admin-user-row">${avH}
+      <div class="aur-info">
+        <div class="aur-name">${u.name}${isMe?'<span class="aur-badge you">You</span>':''}${isRemoved?'<span class="aur-badge removed">Removed</span>':'<span class="aur-badge active">Active</span>'}</div>
+        <div class="aur-uname">@${u.username}${u.online?' · 🟢':''}</div>
+      </div>
+      <div>${!isMe?(isRemoved?`<button class="aur-btn restore" onclick="adminRestore('${u.username}')">Restore</button>`:`<button class="aur-btn remove" onclick="adminRemove('${u.username}')">Remove</button>`):''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function adminRemove(uid){removedUsers[uid]=true;saveRemoved();delete convos[uid];buildDMs();buildAdminStats();renderAdminUsers();showToast(`@${uid} removed`)}
+function adminRestore(uid){delete removedUsers[uid];saveRemoved();const su=SAMPLE_USERS.find(u=>u.username===uid);if(su){convos[uid]={user:su,msgs:(INIT_MSGS[uid]||[]).map((t,j)=>({text:t,mine:false,ts:new Date(Date.now()-(3-j)*90000)})),unread:0}}buildDMs();buildAdminStats();renderAdminUsers();showToast(`@${uid} restored`)}
+
+/* INFO PAGES */
+function openInfoPage(id){
+  prevScreen='s-profile';
+  ['s-privacy','s-notifsettings','s-about','s-admin','s-followlist','s-editprofile','s-userprofile',
+   's-auth','s-dms','s-chat','s-search','s-notif','s-profile']
+  .forEach(s=>document.getElementById(s).classList.toggle('off',s!==id));
+  if(id==='s-notifsettings') renderNotifToggles();
+}
+
+/* NOTIF SETTINGS TOGGLES */
+let notifSettings={msg:true,msgprev:true,follow:true,likes:true,updates:false};
+function renderNotifToggles(){
+  Object.keys(notifSettings).forEach(k=>{
+    const el=document.getElementById('ntog-'+k);
+    if(el) el.classList.toggle('on',notifSettings[k]);
+  });
+}
+function toggleNotifSetting(key){
+  notifSettings[key]=!notifSettings[key];
+  const el=document.getElementById('ntog-'+key);
+  if(el) el.classList.toggle('on',notifSettings[key]);
+  showToast(notifSettings[key]?'Notifications enabled':'Notifications disabled');
+}
+
+/* SPLASH */
+function runSplash(cb){
+  const splash=document.getElementById('splash');
+  // Wait for bar animation (~2.8s total) then hide
+  setTimeout(()=>{
+    splash.classList.add('hide');
+    setTimeout(cb,650);
+  },2800);
+}
+
+/* BOOT */
+const _s=localStorage.getItem('nexus_me');
+// Make sure all app screens are hidden at start
+['s-auth','s-dms','s-chat','s-search','s-notif','s-userprofile','s-followlist','s-profile','s-editprofile','s-admin','s-privacy','s-notifsettings','s-about']
+  .forEach(s=>document.getElementById(s).classList.add('off'));
+// Run splash then reveal app
+setTimeout(()=>{
+  const splash=document.getElementById('splash');
+  splash.classList.add('hide');
+  setTimeout(()=>{
+    splash.style.display='none';
+    if(_s){try{me=JSON.parse(_s);launch();}catch(e){show('s-auth');}}
+    else{show('s-auth');}
+  },650);
+},2800);
+</script>
+</body>
+</html>

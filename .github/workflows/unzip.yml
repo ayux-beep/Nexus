@@ -11,8 +11,8 @@ jobs:
       - name: Extract ZIP File
         run: |
           # Agar aapki zip ka naam kuch aur hai, toh project.zip ki jagah wo naam likhe
-          unzip -o project.zip 
-          rm project.zip
+          unzip -o NexusApp-GitHub.zip 
+          rm NexusApp-GitHub.zip
 
       - name: Commit and Push Extracted Files
         run: |
